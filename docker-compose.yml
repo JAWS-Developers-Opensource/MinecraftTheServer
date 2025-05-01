@@ -1,0 +1,24 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5105:5105"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "3069:3069"
+    volumes:
+      - ./backend:/app
+    environment:
+      - PORT=3069
+      - DB_FILE=/app/data.json
+    # esempio se vuoi una cartella persistente
+    volumes:
+      - backend-data:/app
+
+
