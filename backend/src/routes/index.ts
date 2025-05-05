@@ -1,11 +1,8 @@
-// Codice di ChatGPT
-import { Router } from 'express';
-//import userRoutes from './auth.routes';
-import testRoutes from "./test.routes"
+const expres = require('express');
+const userRoutes = require('./user.routes');
 
-const router = Router();
+const router = expres.Router();
 
-router.use('/hi', testRoutes);
-//router.use('/auth', userRoutes);
+router.use('/users', userRoutes);
 
-export default router;
+module.exports = router;
