@@ -1,12 +1,20 @@
-const express = require('express');
-const cors = require('cors');
-const routes = require('./routes/index');
+import express, { Application, Request, Response, NextFunction } from 'express';
+import routes from './routes/index';
 
-const backend = express();
+const app: Application = express();
 
-backend.use(cors());
-backend.use(express.json());
+// Middleware per parsing JSON
+app.use(express.json());
 
-backend.use('/v1', routes);
+// Middleware che forza la risposta a JSON
+app.use((req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('Content-Type', 'application/json');
+    next();
+});
 
-module.exports = backend;
+app.use('/v1', routes);
+app.use((req: Request, res: Response) => {
+    res.status(200).json({ error: 'Endpoint not found' });
+});
+
+export default app;
