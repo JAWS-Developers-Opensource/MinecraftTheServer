@@ -32,7 +32,7 @@ export const LoginScreen: React.FC = () => {
         setLoading(true);
 
         Auht.login(username, password).then(res => {
-            
+            console.log(res);
         })
     }
 

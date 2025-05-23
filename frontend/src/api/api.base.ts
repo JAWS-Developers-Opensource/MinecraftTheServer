@@ -1,6 +1,6 @@
 import { APIResponse } from "../types/api.types.ts";
 export var lastExecutiondata: APIResponse;
-const API_URL = "";
+const API_URL = "http://127.20.0.11:3000";
 export const APIQuery = async (auth: { token: string, session_id: string }, path: string, method: 'POST' | 'GET', headers_values: { name: string, value: string }[], postData?: any): Promise<APIResponse> => {
     try {
         const response = await fetch(`${API_URL}${path}`, {
