@@ -1,20 +1,11 @@
 {
     "name": "minecrafttheserver",
     "private": true,
-    "version": "0.0.1",
-    "workspaces": [
-        "backend",
-        "frontend"
-    ],
+    "version": "0.0.2",
     "scripts": {
         "dev": "concurrently \"npm --workspace backend run dev\" \"npm --workspace frontend run dev\""
     },
     "devDependencies": {
-        "concurrently": "^8.2.2",
         "jaws-helper": "^3.1.6"
-    },
-    "dependencies": {
-        "@formkit/auto-animate": "^0.8.2",
-        "react-router-dom": "^7.5.3"
     }
 }
