@@ -1,9 +1,13 @@
 {
     "name": "minecrafttheserver",
     "private": true,
-    "version": "0.0.2",
+    "version": "0.0.3",
+    "workspaces": [
+        "./frontend"
+    ],
     "scripts": {
-        "dev": "concurrently \"npm --workspace backend run dev\" \"npm --workspace frontend run dev\""
+        "frontend": "cd frontend && npm i && npm run dev",
+        "backend": "docker compose up"
     },
     "devDependencies": {
         "jaws-helper": "^3.1.6"

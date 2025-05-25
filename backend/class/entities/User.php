@@ -12,11 +12,9 @@ class User implements JsonSerializable
         $this->SetId($user->id);
         $this->SetName($user->name);
         $this->SetSurname($user->surname);
-        $this->SetEmail($user->email);
+        $this->SetUsername($user->username);
         $this->SetStatus($user->status);
         $this->SetRole($user->role);
-        $this->SetProfilePicture($user->profile_picture);
-        $this->SetAssociations($user->association);
     }
 
     #region PROPS
@@ -78,22 +76,22 @@ class User implements JsonSerializable
     }
 
 
-    protected string $email;
+    protected string $username;
 
     /**
      * @return string
      */
-    public function GetEmail(): string
+    public function GetUsername(): string
     {
-        return $this->email;
+        return $this->username;
     }
 
     /**
-     * @param string $email
+     * @param string $username
      */
-    public function SetEmail(string $email): void
+    public function SetUsername(string $username): void
     {
-        $this->email = $email;
+        $this->username = $username;
     }
 
 
@@ -132,69 +130,6 @@ class User implements JsonSerializable
     public function SetRole(array $role): void
     {
         $this->role = $role;
-    }
-
-
-    protected string $profile_picture;
-
-    /**
-     * @return string
-     */
-    public function GetProfilePicture(): string
-    {
-        return $this->profile_picture;
-    }
-
-    /**
-     * @param string $profile_picture
-     */
-    public function SetProfilePicture(string $profile_picture): void
-    {
-        $this->profile_picture = $profile_picture;
-    }
-
-
-
-    protected array $association;
-
-    /**
-     * @return array
-     */
-    public function GetAssociations(): array
-    {
-        return $this->association;
-    }
-
-    /**
-     * @param array $association
-     */
-    public function SetAssociations(array $association): void
-    {
-        $this->association = $association;
-    }
-
-    protected array $association_permission;
-
-    /**
-     * @return array
-     */
-    public function GetAssociationPermission(): array
-    {
-        return $this->association_permission;
-    }
-
-    /**
-     * 
-     */
-    public function LoadPermissions(): void
-    {
-        if (empty($this->association)) {
-            $this->association_permission = [];
-        } else {
-            foreach ($this->association as $association) {
-                $this->association_permission[$association] = $this->GetPermissionOf($this->GetId(), $association);
-            }
-        }
     }
 
     #endregion

@@ -1,0 +1,12 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php [L,QSA]
+
+
+# Attivare prima di pubblicare
+php_flag display_errors On
+php_flag file_uploads On
+php_value post_max_size 15G
+php_value upload_max_filesize 15G
+php_value memory_limit 15G

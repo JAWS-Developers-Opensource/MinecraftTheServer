@@ -197,7 +197,7 @@ class API
             case "":
                 $this->PrintAPIDebug();
                 break;
-            case "get-session-id-for-auth":
+            case "get-session-id":
                 ProcessManager::EndProcessWithData(SessionManager::GenerateSessionIdForAuth(), "session-id");
                 break;
             case "info":
@@ -205,11 +205,6 @@ class API
                 ProcessManager::EndProcessWithData(phpinfo(), "phpInfo");
                 break;
             case "auth":
-                if (!SessionManager::ValidateSessionId(Client::GetSessionId())) {
-                    ProcessManager::AddLogData("x-session-id", Client::GetSessionId());
-                    ProcessManager::EndProcessWithCode("1.1.3");
-                }
-
                 if (!isset($this->path[1]))
                     ProcessManager::EndProcessWithCode("1.1.1");
 
@@ -283,7 +278,7 @@ class API
     private function PrintAPIDebug(string $status = "up"): void
     {
         $data = new stdClass();
-        $data->name = "Sportify API";
+        $data->name = "The Minecraft Server Backend";
         $data->authors = array("Timo Coupek | JAWS Developers");
         $data->status = $status;
         $data->sql_conn = self::$db_conn->stat();

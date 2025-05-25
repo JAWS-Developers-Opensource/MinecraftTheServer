@@ -26,59 +26,37 @@ class Register
     #region Init
     public function Init(): void
     {
-        if (($this->data->email ?? "") == "")
+        if (($this->data->username ?? "") == "")
             ProcessManager::EndProcessWithCode("1.2.2.1");
 
         if (($this->data->password ?? "") == "")
             ProcessManager::EndProcessWithCode("1.2.2.2");
 
         if (($this->data->name ?? "") == "")
-            ProcessManager::EndProcessWithCode("1.2.2.3");
+            $this->data->name = "";
 
         if (($this->data->surname ?? "") == "")
-            ProcessManager::EndProcessWithCode("1.2.2.4");
+            $this->data->surname = "";
 
-        if (($this->data->token ?? "") == "")
-            ProcessManager::EndProcessWithCode("1.2.2.5");
-
-        if ($this->CheckEmailValidity($this->data->email))
+        if ($this->CheckUsernameValidity($this->data->username))
         {
-            ProcessManager::AddLogData("email", $this->data->email);
-            ProcessManager::EndProcessWithCode("1.2.2.6");
+            ProcessManager::AddLogData("username", $this->data->username);
+            ProcessManager::EndProcessWithCode("1.2.2.3");
         }
 
         if (!$this->CheckPasswordSafety($this->data->password))
         {
-            ProcessManager::EndProcessWithCode("1.2.2.7");
+            ProcessManager::EndProcessWithCode("1.2.2.4");
         }
-
-        if (!TokenManager::CheckifRegistrationKeyExists($this->data->token))
-        {
-            ProcessManager::AddLogData("email", $this->data->email);
-            ProcessManager::AddLogData("name", $this->data->name);
-            ProcessManager::AddLogData("surname", $this->data->surname);
-            ProcessManager::AddLogData("token", $this->data->token);
-            ProcessManager::EndProcessWithCode("1.2.2.8");
-            
-        }
-            
-        if (!$this->CheckTokenValidityWithEmail($this->data->token, $this->data->email))
-        {
-            ProcessManager::AddLogData("email", $this->data->email);
-            ProcessManager::AddLogData("name", $this->data->name);
-            ProcessManager::AddLogData("surname", $this->data->surname);
-            ProcessManager::AddLogData("token", $this->data->token);
-            ProcessManager::EndProcessWithCode("1.2.2.9");
-        }
-            
-        if (!$this->CreateUser($this->data->email, $this->data->password, $this->data->name, $this->data->surname))
+              
+        if (!$this->CreateUser($this->data->username, $this->data->password, $this->data->name, $this->data->surname))
             ProcessManager::EndProcessWithCode("1.2.10");
 
-        $this->DeleteRegisterCode($this->data->token);
+        //$this->DeleteRegisterCode($this->data->token);
 
-        $this->AssignRoleInCustomer($this->role, $this->customer_id);
+        //$this->AssignRoleInCustomer($this->role, $this->customer_id);
 
-        $this->SendWelcomeEmail($this->data->email);
+        //$this->SendWelcomeEmail($this->data->username);
         ProcessManager::EndProcessWithCode("1.2.0");
     }
     #endregion
@@ -87,16 +65,16 @@ class Register
     /**
      * Function to check id the username is valid
      *
-     * @param string $email Email
+     * @param string $username Email
      * @return true if exists
      */
-    private function CheckEmailValidity(string $email, bool $save_id = false): bool
+    private function CheckUsernameValidity(string $username, bool $save_id = false): bool
     {
         # Lower Case
-        $email = strtolower($email);
+        $username = strtolower($username);
 
-        $p = $this->conn->prepare("SELECT * FROM `user` WHERE `email` = ?");
-        $p->bind_param("s", $email);
+        $p = $this->conn->prepare("SELECT * FROM `user` WHERE `username` = ?");
+        $p->bind_param("s", $username);
         $p->execute();
         $result = $p->get_result();
 
@@ -135,34 +113,6 @@ class Register
         return true;
     }
 
-
-    /**
-     * Check if token is valid with the passed email
-     *
-     * @param string $token Token
-     * @return boolean true if valid
-     */
-    private function CheckTokenValidityWithEmail(string $token, string $email): bool
-    {
-        $p = $this->conn->prepare("SELECT * FROM `registration_key` WHERE `token` = ? AND `email` = ?");
-        $p->bind_param("ss", $token, $email);
-        $p->execute();
-        $result = $p->get_result();
-
-        # Check if exist
-        if (mysqli_num_rows($result)) {
-            //Save data
-            while ($row = mysqli_fetch_array($result)) {
-                $this->role = $row['role_id'];
-                $this->customer_id = $row['association_id'];
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * Function to create the user
      *
@@ -172,28 +122,28 @@ class Register
      * @param string $surname
      * @return bool
      */
-    public function CreateUser(string $email, string $password, string $name, string $surname): bool
+    public function CreateUser(string $username, string $password, string $name, string $surname): bool
     {
 
         # Lower Case all and crypt
-        $email = strtolower($email);
+        $username = strtolower($username);
         $name = strtolower($name);
         $surname = strtolower($surname);
 
         $password = $password . PASSWORD_PAPER;
 
-        $password = "Sportify-pass--" . password_hash($password, PASSWORD_ARGON2ID, [
+        $password = "MTS-pass--" . password_hash($password, PASSWORD_ARGON2ID, [
             'memory_cost' => 1 << 20, // 64 MB di memoria
             'time_cost' => 4,         // 4 passaggi di hashing
             'threads' => 2            // Due thread (supporto multi-threading)
         ]);
 
         $p = $this->conn->prepare("INSERT INTO `user` (`email`, `name`, `surname`, `password`) VALUES (?,?,?,?)");
-        $p->bind_param("ssss", $email, $name, $surname, $password);
+        $p->bind_param("ssss", $username, $name, $surname, $password);
         $p->execute();
 
         # Check if user are inserted
-        if ($this->CheckEmailValidity($email, true))
+        if ($this->CheckUsernameValidity($username, true))
             return true;
             
         return false;

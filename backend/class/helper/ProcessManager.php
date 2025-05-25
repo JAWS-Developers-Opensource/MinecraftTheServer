@@ -64,7 +64,7 @@ class ProcessManager
     }
 
 
-    private static function EndProcessBase(string $error_code, bool $log = true, string $url = null): void
+    private static function EndProcessBase(string $error_code, bool $log = true, string $url = ""): void
     {
         self::$process_id = self::$process_id ?? TokenManager::GenerateToken("boot-err");
         $data = new stdClass();
@@ -74,18 +74,11 @@ class ProcessManager
         print_r(json_encode($data));
         $uid = API::GetUser()->GetId();
 
-        if ($_SERVER['HTTP_HOST'] === 'api-dev.sportifyapp.co') {
-            self::AddLogData("beta", "true");
-        } else {
-            self::AddLogData("beta", "false");
-        }
+        if ($log) self::Log($error_code, $uid, json_encode(self::$log_data));
 
-        if ($log)
-            self::Log($error_code, $uid, json_encode(self::$log_data));
+        if ($log) API::GetDBConnection()->close();
 
-        API::GetDBConnection()->close();
-
-        if ($url !== null) {
+        if ($url !== "") {
             header("location: " . $url);
         }
 

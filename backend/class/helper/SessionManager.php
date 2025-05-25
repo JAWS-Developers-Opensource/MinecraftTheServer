@@ -3,11 +3,11 @@
 class SessionManager
 {
     // Chiave segreta per la cifratura
-    private const DASHBOARD_KEY = DASHBOARD_KEY;
+    private const DASHBOARD_KEY = SECRET_KEY;
     // Lunghezza totale del token desiderata
     private const TOKEN_LENGTH = 128;
     // Prefisso fisso per l'ID di sessione
-    private const PREFIX = 'Sportify-client--';
+    private const PREFIX = 'MTS-client--';
     // Genera un Session ID completamente casuale e lo firma
     public static function GenerateSessionIdForAuth(): string
     {

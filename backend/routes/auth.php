@@ -67,7 +67,6 @@ class Auth
         if (!$user->GetStatus())
             ProcessManager::EndProcessWithCode("1.4.3");
 
-        $user->LoadPermissions();
         TokenManager::UpdateTokenValidity($token);
         return $user;
     }

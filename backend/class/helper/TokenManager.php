@@ -28,7 +28,7 @@ class TokenManager
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
-        $randomString = 'Sportify-';  // Prefisso fisso
+        $randomString = 'MTS-';  // Prefisso fisso
         $baseLength = strlen($randomString); // Lunghezza del prefisso "SportifyApp-"
 
         // Spazio rimanente dopo il prefisso per rispettare la lunghezza totale
