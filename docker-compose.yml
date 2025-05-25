@@ -1,6 +1,7 @@
 services:
   db:
     image: mariadb:latest
+    container_name: mts-db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: URafyiip9Q*Ws
@@ -18,6 +19,7 @@ services:
 
   backend:
     image: php:8.2-apache
+    container_name: mts-backend
     ports:
       - "8080:80"
     volumes:
@@ -35,6 +37,27 @@ services:
     networks:
       internal:
         ipv4_address: 172.28.0.11
+
+
+  mc-gate:
+    image: ghcr.io/minekube/gate:latest
+    container_name: mts-mc-gate
+    ports:
+      - "25565:25565"
+    restart: unless-stopped
+    volumes:
+      - ./config/config.yml:/config.yml
+    networks:
+      internal:
+        ipv4_address: 172.28.0.12
+        
+  server:
+    build: ./server
+    container_name: mts-mc-server
+    volumes:
+      - ./data/servers:/mc/servers
+    tty: true
+    stdin_open: true
 
 #  frontend-dev:
 #    image: node:23

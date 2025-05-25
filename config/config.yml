@@ -1,0 +1,6 @@
+config:
+  lite:
+    enabled: true
+    routes:
+      - host: jawsdevelopers.ch
+        backend: 10.0.1.11:25515
