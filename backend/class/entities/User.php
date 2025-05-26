@@ -114,20 +114,20 @@ class User implements JsonSerializable
     }
 
 
-    protected array $role;
+    protected string $role;
 
     /**
      * @return array
      */
-    public function GetRole(): array
+    public function GetRole(): string
     {
         return $this->role;
     }
 
     /**
-     * @param array $role
+     * @param string $role
      */
-    public function SetRole(array $role): void
+    public function SetRole(string $role): void
     {
         $this->role = $role;
     }
@@ -143,30 +143,10 @@ class User implements JsonSerializable
      */
     public function IsAdmin(): bool
     {
-        if (in_array("admin", $this->GetRole()))
+        if ($this->GetRole() == "admin")
             return true;
 
         return false;
-    }
-    
-    public function HasPermissionTo(string $permission): bool
-    {
-        if(!array_key_exists(ProcessManager::GetAffectedAssociation(), $this->association_permission))
-            return false;
-
-        if (in_array($permission, $this->association_permission[ProcessManager::GetAffectedAssociation()]))
-            return true;
-
-        return false;
-    }
-
-
-    /**
-     * 
-     */
-    public function IsPartOf(int $association_id)
-    {
-        return in_array($association_id, $this->GetAssociations());
     }
 
     public function UpdateLastLogin(): void
@@ -290,13 +270,11 @@ class User implements JsonSerializable
         $user = new stdClass();
 
         $user->id = $row['id'];
-        $user->email = $row['email'];
+        $user->username = $row['username'];
         $user->name = $row['name'];
         $user->surname = $row['surname'];
         $user->status = $row['status'];
-        $user->profile_picture = $row['profile_picture'];
-        $user->role = json_decode($row['role']);
-        $user->association = json_decode($row['association']);
+        $user->role = $row['role'];
 
         return new User($user);
     }
@@ -315,13 +293,11 @@ class User implements JsonSerializable
             $user = new stdClass();
 
             $user->id = $row['id'];
-            $user->email = $row['email'];
+            $user->username = $row['username'];
             $user->name = $row['name'];
             $user->surname = $row['surname'];
             $user->status = $row['status'];
-            $user->profile_picture = $row['profile_picture'];
-            $user->role = json_decode($row['role']);
-            $user->association = json_decode($row['association']);
+            $user->role = $row['role'];
 
             $users[] = new User($user);
         }

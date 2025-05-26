@@ -44,13 +44,13 @@ class Auth
 
         //Check if token exist
         if (($token == "") && $print_error)
-            ProcessManager::EndProcessWithCode("1.4.1", "", false);
+            ProcessManager::EndProcessWithCode("1.4.3.1", "", false);
 
         //Check if API credential are valid
         if (!TokenManager::CheckTokenValidity($token, $session_id)) {
             ProcessManager::AddLogData("x-session-id", $session_id);
             ProcessManager::AddLogData("token", $token);
-            ProcessManager::EndProcessWithCode("1.4.2");
+            ProcessManager::EndProcessWithCode("1.4.3.1");
         }
 
         //Get user id

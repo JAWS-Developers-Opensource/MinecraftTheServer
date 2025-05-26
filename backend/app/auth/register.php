@@ -52,11 +52,6 @@ class Register
         if (!$this->CreateUser($this->data->username, $this->data->password, $this->data->name, $this->data->surname))
             ProcessManager::EndProcessWithCode("1.2.10");
 
-        //$this->DeleteRegisterCode($this->data->token);
-
-        //$this->AssignRoleInCustomer($this->role, $this->customer_id);
-
-        //$this->SendWelcomeEmail($this->data->username);
         ProcessManager::EndProcessWithCode("1.2.0");
     }
     #endregion
@@ -138,7 +133,7 @@ class Register
             'threads' => 2            // Due thread (supporto multi-threading)
         ]);
 
-        $p = $this->conn->prepare("INSERT INTO `user` (`email`, `name`, `surname`, `password`) VALUES (?,?,?,?)");
+        $p = $this->conn->prepare("INSERT INTO `user` (`username`, `name`, `surname`, `password`) VALUES (?,?,?,?)");
         $p->bind_param("ssss", $username, $name, $surname, $password);
         $p->execute();
 

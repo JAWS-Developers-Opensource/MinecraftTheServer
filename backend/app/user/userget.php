@@ -19,7 +19,7 @@ class UserGet
         $this->conn = API::GetDBConnection();
 
         if ($path == "") {
-            ProcessManager::EndProcessWithCode("2.2.2");
+            ProcessManager::EndProcessWithCode("2.2.5");
         }
 
         $this->path = $path;
@@ -42,13 +42,13 @@ class UserGet
             case is_numeric($this->path):
                 if ($this->path != API::GetUser()->GetId())
                     if (!API::GetUser()->IsAdmin())
-                        ProcessManager::EndProcessWithCode("2.2.2.1.2");
+                        ProcessManager::EndProcessWithCode("2.2.1.2");
 
                 if (!User::ExistsById($this->path))
-                    ProcessManager::EndProcessWithCode("sd");
+                    ProcessManager::EndProcessWithCode("2.2.2.1");
 
                 ProcessManager::AddLogData("user_id", $this->path);
-                ProcessManager::EndProcessWithData($this->ById($this->path), "2.2.2.0.1", $this->path);
+                ProcessManager::EndProcessWithData($this->ById($this->path), "2.2.0.2", $this->path);
                 break;
             case "me":
                 //Return users data of the asker user
@@ -57,7 +57,7 @@ class UserGet
 
             default:
                 ProcessManager::AddLogData("path", $this->path);
-                ProcessManager::EndProcessWithCode("2.2.2");
+                ProcessManager::EndProcessWithCode("2.2.5");
         }
     }
     #endregion
@@ -70,16 +70,8 @@ class UserGet
     private function GetAllUsers(): stdClass
     {
         $result = $this->conn->query("SELECT 
-        `user`.*, 
-        IF(COUNT(`user_association`.association_id) = 0, 
-           JSON_ARRAY(), 
-           JSON_ARRAYAGG(
-                   `user_association`.association_id
-           )
-        ) as association
+        *
         FROM `user`
-        LEFT JOIN `user_association` 
-            ON `user_association`.`user_id` = `user`.`id` 
         GROUP BY `user`.`id`;
         ");
         return (object) User::GetAllByResult($result);
@@ -94,16 +86,8 @@ class UserGet
     public static function ById(int $id): User
     {
         $p = API::GetDBConnection()->prepare("SELECT 
-        `user`.*, 
-        IF(COUNT(`user_association`.association_id) = 0, 
-           JSON_ARRAY(), 
-           JSON_ARRAYAGG(
-                   `user_association`.association_id
-           )
-        ) as association
+        `user`.*
         FROM `user`
-        LEFT JOIN `user_association` 
-        ON `user_association`.`user_id` = `user`.`id` 
         WHERE `id` = ?
         GROUP BY `user`.`id`");
         $p->bind_param("d", $id);
@@ -111,7 +95,6 @@ class UserGet
         $result = $p->get_result();
 
         $user = User::GetByResult($result);
-        $user->LoadPermissions();
 
         return $user;
     }
@@ -125,16 +108,8 @@ class UserGet
     public static function ByEmail(string $email): User
     {
         $p = API::GetDBConnection()->prepare("SELECT 
-        `user`.*, 
-        IF(COUNT(`user_association`.association_id) = 0, 
-           JSON_ARRAY(), 
-           JSON_ARRAYAGG(
-                   `user_association`.association_id
-           )
-        ) as association
+        `user`
         FROM `user`
-        LEFT JOIN `user_association` 
-        ON `user_association`.`user_id` = `user`.`id` 
         WHERE `user`.`email` = ?
         GROUP BY `user`.`id`");
         $p->bind_param("s", $email);
@@ -142,24 +117,7 @@ class UserGet
         $result = $p->get_result();
 
         $user = User::GetByResult($result);
-        $user->LoadPermissions();
 
         return $user;
-    }
-
-    /**
-     * This function returns all users that is part of the passed customer
-     *
-     * @param int $id
-     * @return stdClass
-     */
-    private function GetUsersOfCustomer(int $id): stdClass
-    {
-        $p = $this->conn->prepare("SELECT `user`.`id`,`user`.`name`, `user`.`surname`, `user`.`email`, `user`.`status`, `user`.`role`, `user`.`profile_picture`, COALESCE(JSON_ARRAYAGG(`association`.`name`), '[]') as customers_names, COALESCE(JSON_ARRAYAGG(`role`.`customer_id`), '[]') as association FROM `user` LEFT JOIN `role` ON `user`.`id` = `role`.`user_id` LEFT JOIN `association` ON `role`.`customer_id` = `association`.`id` WHERE `association`.`id` = ? GROUP BY `user`.`id`;");
-        $p->bind_param("d", $id);
-        $p->execute();
-        $result = $p->get_result();
-
-        return (object) User::GetAllByResult($result);
     }
 }

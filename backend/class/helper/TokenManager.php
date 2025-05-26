@@ -161,7 +161,7 @@ class TokenManager
         $expire_time = $type == "mobile" ? "INTERVAL 14 DAY" : "INTERVAL 10 MINUTE";
         $p = API::GetDBConnection()->prepare("INSERT INTO `session` (`token`, `session_id`, `user_id`, `expire`, `type`, `ip`) VALUES (?,?,?,
         (SELECT DATE_ADD(NOW(), $expire_time)), ?, ?)");
-        $token = self::GenerateToken(128, "auth");
+        $token = self::GenerateToken("auth");
         $ip = User::GetIP();
         $p->bind_param("sssss", $token, $session_id, $user_id, $type, $ip);
 

@@ -28,7 +28,7 @@ class Login
      */
     function Init(): void
     {
-        if (($this->data->email ?? "") == "")
+        if (($this->data->username ?? "") == "")
             ProcessManager::EndProcessWithCode("1.3.2.1");
 
         if (($this->data->password ?? "") == "")
@@ -42,8 +42,8 @@ class Login
         //if (($this->data->login_type ?? "") == "")
         //ProcessManager::EndProcessWithCode("1.3.4");
 
-        if (!$this->CheckCredential($this->data->email, $this->data->password, $session_id, "web")) {
-            ProcessManager::AddLogData("email", $this->data->email);
+        if (!$this->CheckCredential($this->data->username, $this->data->password, $session_id, "web")) {
+            ProcessManager::AddLogData("username", $this->data->username);
             ProcessManager::AddLogData("x-session-id", $session_id);
             ProcessManager::EndProcessWithCode("1.3.2.3");
         }
@@ -77,23 +77,23 @@ class Login
         // Recupera l’hash salvato del database basato sull’email dell’utente
         $procedure = $this->conn->prepare("SELECT `user`.*
             FROM `user`
-            WHERE `user`.`email` = ?");
+            WHERE `user`.`username` = ?");
         $procedure->bind_param("s", $email);
         $procedure->execute();
         $result = $procedure->get_result();
         if ($row = $result->fetch_assoc()) {
             $storedPasswordHash = $row['password'];
-            $passwordHashWithoutPrefix = str_replace("Sportify-pass--", "", $storedPasswordHash);
+            $passwordHashWithoutPrefix = str_replace("MTS-pass--", "", $storedPasswordHash);
             // Verifica la password usando l'hash senza prefisso
             if (password_verify($password, $passwordHashWithoutPrefix)) {
                 $user_data = new User(null);
 
                 $user_data->SetId($row['id']);
-                $user_data->SetEmail($row['email']);
+                $user_data->SetUsername($row['username']);
                 $user_data->SetName($row['name']);
                 $user_data->SetSurname($row['surname']);
                 $user_data->SetStatus($row['status']);
-                $user_data->SetRole(json_decode($row['role']));
+                $user_data->SetRole($row['role']);
                 $this->user_data = $user_data;
 
                 $this->GenerateToken(($login_type == "mobile" ? "mobile" : "web"), $session_id);
@@ -132,11 +132,11 @@ class Login
         $user_data = new User(null);
         while ($row = mysqli_fetch_array($result)) {
             $user_data->SetId($row['id']);
-            $user_data->SetEmail($row['email']);
+            $user_data->SetUsername($row['username']);
             $user_data->SetName($row['name']);
             $user_data->SetSurname($row['surname']);
             $user_data->SetStatus($row['status']);
-            $user_data->SetRole(json_decode($row['role']));
+            $user_data->SetRole($row['role']);
         }
         return $user_data;
     }
