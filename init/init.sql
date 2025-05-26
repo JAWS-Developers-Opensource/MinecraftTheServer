@@ -42,6 +42,7 @@ CREATE TABLE `user` (
 CREATE TABLE `mc_server` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
+    `status` TINYINT(4) NOT NULL DEFAULT 1,
     PRIMARY KEY (`id`)
 );
 
